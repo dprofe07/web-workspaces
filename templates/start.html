@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Start Workspace</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <h1>Create or Open Workspace</h1>
+    <input type="text" id="codeInput" placeholder="Enter workspace code" required>
+    <button type="submit" onclick="openWorkspace()">Open/Create Workspace</button>
+
+    <script>
+        function openWorkspace() {
+            const code = document.getElementById('codeInput').value.trim();
+            if (code) {
+                window.location.href = `{{ url_for('app.workspace', code='') }}${encodeURIComponent(code)}`;
+            }
+        }
+
+        document.getElementById('codeInput').focus();
+        document.getElementById('codeInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') addSite();
+        });
+    </script>
+</body>
+</html>

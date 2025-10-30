@@ -3,7 +3,7 @@ import os
 
 from flask import Flask, request, render_template, redirect, url_for, Response, Blueprint
 
-from site import Site
+from site_cls import Site
 from workspaces import Workspace, Storage
 
 if os.path.exists('/SERVER/is_server') or True:

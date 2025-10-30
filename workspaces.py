@@ -1,7 +1,7 @@
 import json
 import os
 
-from site import Site
+from site_cls import Site
 
 
 class Workspace:

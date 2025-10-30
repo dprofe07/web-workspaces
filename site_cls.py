@@ -7,14 +7,13 @@ class Site:
     def to_html(self, index):
         if not self.is_sep:
             return f'''\
-    <div class="site-item" data-index="{index}">
-        <span onclick="loadSite('{self.url}')">{self.name}
-            <span class="controls">
+    <div class="site-item" data-index="{index}" onclick="loadSite('{self.url}')">
+        {self.name}
+            <span class="controls-site">
                 <span onclick="moveSiteUp({index})">▵</span>
                 <span onclick="moveSiteDown({index})">▿</span>
                 <span class="delete-btn" onclick="deleteSite({index})">×</span>
             </span>
-        </span>
     </div>'''
         else:
             return f'''<div class="site-separator" data-index="{index}"/>'''

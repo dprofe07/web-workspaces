@@ -24,7 +24,7 @@ def start():
 
 @appbp.route('/<code>')
 def workspace(code):
-    sites = storage.get_or_create_workspace(code)
+    sites = storage.get_or_create_workspace(code).sites
     return render_template('workspace.html', code=code, sites=sites)
 
 

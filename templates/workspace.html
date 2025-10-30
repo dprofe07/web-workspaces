@@ -88,7 +88,7 @@
 
         <div id="sitesList">
             {% for site in sites %}
-                {{ site.to_html(loop.index0) }}
+                {{ site.to_html(loop.index0) | safe }}
             {% endfor %}
         </div>
     </div>

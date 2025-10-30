@@ -97,25 +97,25 @@
 
             if (name && url) {
                 fetch(
-                    `{{ url_for('add_site', code=code) }}?name=${encodeURIComponent(name)}&url=${encodeURIComponent(url)}`
+                    `{{ url_for('app.add_site', code=code) }}?name=${encodeURIComponent(name)}&url=${encodeURIComponent(url)}`
                 ).then(() => location.reload());
             }
         }
 
         function deleteSite(index) {
             if (confirm('Delete this site?')) {
-                fetch(`{{ url_for('remove_site', code=code) }}?index=${index}`)
+                fetch(`{{ url_for('app.remove_site', code=code) }}?index=${index}`)
                     .then(() => location.reload());
             }
         }
 
         function moveSiteDown(index) {
-            fetch(`{{ url_for('move_site_down', code=code) }}?index=${index}`)
+            fetch(`{{ url_for('app.move_site_down', code=code) }}?index=${index}`)
                 .then(() => location.reload());
         }
 
         function moveSiteUp(index) {
-            fetch(`{{ url_for('move_site_up', code=code) }}?index=${index}`)
+            fetch(`{{ url_for('app.move_site_up', code=code) }}?index=${index}`)
                 .then(() => location.reload());
         }
 

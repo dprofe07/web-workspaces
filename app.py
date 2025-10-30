@@ -3,28 +3,18 @@ import os
 
 from flask import Flask, request, render_template, redirect, url_for, Response, Blueprint
 
+from site import Site
+from workspaces import Workspace, Storage
+
 if os.path.exists('/SERVER/is_server') or True:
     prefix = '/web-workspaces'
 else:
     prefix = '/'
 
 appbp = Blueprint('app', __name__, url_prefix=prefix)
-DATA_FILE = 'workspaces.json'
 
-workspaces = {}
-
-if not os.path.exists(DATA_FILE):
-    with open(DATA_FILE, 'w') as f:
-        json.dump({}, f)
-
-with open(DATA_FILE, 'r') as f:
-    workspaces = json.load(f)
-
-
-
-def save_workspaces(workspaces):
-    with open(DATA_FILE, 'w') as f:
-        json.dump(workspaces, f)
+storage = Storage('workspaces.json')
+storage.load()
 
 
 @appbp.route('/')
@@ -34,8 +24,17 @@ def start():
 
 @appbp.route('/<code>')
 def workspace(code):
-    sites = workspaces.get(code, [])
+    sites = storage.get_or_create_workspace(code)
     return render_template('workspace.html', code=code, sites=sites)
+
+
+def workspace_indexed_action(func, code, index):
+    wsp = storage.get_or_null(code)
+    if wsp and index.isdigit():
+        func(wsp, index)
+        storage.save()
+        return '', 200
+    return '', 400
 
 
 @appbp.route('/<code>/add-site')
@@ -44,54 +43,37 @@ def add_site(code):
     name = request.args.get('name', '')
 
     if url and name:
-        if code not in workspaces:
-            workspaces[code] = []
+        storage.get_or_create_workspace(code).add(Site(name, url))
+        storage.save()
 
-        workspaces[code].append({'name': name, 'url': url})
-        save_workspaces(workspaces)
-
-    return '', 200
+        return '', 200
+    return '', 400
 
 
 @appbp.route('/<code>/remove-site-at')
 def remove_site(code):
-    index = request.args.get('index', '')
-
-    if index.isdigit():
-        index = int(index)
-
-        if code in workspaces and 0 <= index < len(workspaces[code]):
-            workspaces[code].pop(index)
-            save_workspaces(workspaces)
-        return '', 200
-    return '', 400
+    return workspace_indexed_action(
+        lambda wsp, idx: wsp.remove_at(idx),
+        code,
+        request.args.get('index', '')
+    )
 
 
 @appbp.route('/<code>/move-site-down')
 def move_site_down(code):
-    index = request.args.get('index', '')
-
-    if index.isdigit():
-        index = int(index)
-
-        if code in workspaces and index < len(workspaces[code]) - 1:
-            workspaces[code][index], workspaces[code][index + 1] = workspaces[code][index + 1], workspaces[code][index]
-            save_workspaces(workspaces)
-        return '', 200
-    return '', 400
+    return workspace_indexed_action(
+        lambda wsp, idx: wsp.move_down(idx),
+        code,
+        request.args.get('index', '')
+    )
 
 @appbp.route('/<code>/move-site-up')
 def move_site_up(code):
-    index = request.args.get('index', '')
-
-    if index.isdigit():
-        index = int(index)
-
-        if code in workspaces and index > 0:
-            workspaces[code][index], workspaces[code][index - 1] = workspaces[code][index - 1], workspaces[code][index]
-            save_workspaces(workspaces)
-        return '', 200
-    return '', 400
+    return workspace_indexed_action(
+        lambda wsp, idx: wsp.move_up(idx),
+        code,
+        request.args.get('index', '')
+    )
 
 app = Flask(__name__)
 app.register_blueprint(appbp)

@@ -10,7 +10,7 @@ class Site:
     <div class="site-item" data-index="{index}" onclick="loadSite('{self.url}')">
         {self.name}
             <span class="controls-site">
-                <span onclick="moveSiteUp({index})">▵</span>
+                <span onclick="event.stopPropagation(); moveSiteUp({index})">▵</span>
                 <span onclick="moveSiteDown({index})">▿</span>
                 <span class="delete-btn" onclick="deleteSite({index})">×</span>
             </span>

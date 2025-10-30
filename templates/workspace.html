@@ -54,6 +54,10 @@
             cursor: pointer;
             margin-left: 10px;
         }
+        .move-up-down-button {
+            cursor: pointer;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
@@ -71,6 +75,8 @@
                 {% for site in sites %}
                 <div class="site-item" data-index="{{ loop.index0 }}">
                     <span onclick="loadSite('{{ site.url }}')">{{ site.name }}</span>
+                    <span class="move-up-down-btn" onclick="moveSiteUp({{ loop.index0 }})">△▲▴▵</span>
+                    <span class="move-up-down-btn" onclick="moveSiteDown({{ loop.index0 }})">▽▼▿▾</span>
                     <span class="delete-btn" onclick="deleteSite({{ loop.index0 }})">×</span>
                 </div>
                 {% endfor %}
@@ -90,16 +96,27 @@
             const url = document.getElementById('siteUrl').value.trim();
 
             if (name && url) {
-                fetch(`{{ url_for('app.workspace', code=code) }}/add-site?name=${encodeURIComponent(name)}&url=${encodeURIComponent(url)}`)
-                    .then(() => location.reload());
+                fetch(
+                    `{{ url_for('add_site', code=code) }}?name=${encodeURIComponent(name)}&url=${encodeURIComponent(url)}`
+                ).then(() => location.reload());
             }
         }
 
         function deleteSite(index) {
             if (confirm('Delete this site?')) {
-                fetch(`{{ url_for('app.workspace', code=code) }}/remove-site-at?index=${index}`)
+                fetch(`{{ url_for('remove_site', code=code) }}?index=${index}`)
                     .then(() => location.reload());
             }
+        }
+
+        function moveSiteDown(index) {
+            fetch(`{{ url_for('move_site_down', code=code) }}?index=${index}`)
+                .then(() => location.reload());
+        }
+
+        function moveSiteUp(index) {
+            fetch(`{{ url_for('move_site_up', code=code) }}?index=${index}`)
+                .then(() => location.reload());
         }
 
         function loadSite(url) {

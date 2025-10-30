@@ -35,7 +35,7 @@ def start():
 @appbp.route('/<code>')
 def workspace(code):
     sites = workspaces.get(code, [])
-    return render_template('index.html', code=code, sites=sites)
+    return render_template('workspace.html', code=code, sites=sites)
 
 
 @appbp.route('/<code>/add-site')
@@ -63,8 +63,35 @@ def remove_site(code):
         if code in workspaces and 0 <= index < len(workspaces[code]):
             workspaces[code].pop(index)
             save_workspaces(workspaces)
+        return '', 200
+    return '', 400
 
-    return '', 200
+
+@appbp.route('/<code>/move-site-down')
+def move_site_down(code):
+    index = request.args.get('index', '')
+
+    if index.isdigit():
+        index = int(index)
+
+        if code in workspaces and index < len(workspaces[code]) - 1:
+            workspaces[code][index], workspaces[code][index + 1] = workspaces[code][index + 1], workspaces[code][index]
+            save_workspaces(workspaces)
+        return '', 200
+    return '', 400
+
+@appbp.route('/<code>/move-site-up')
+def move_site_up(code):
+    index = request.args.get('index', '')
+
+    if index.isdigit():
+        index = int(index)
+
+        if code in workspaces and index > 0:
+            workspaces[code][index], workspaces[code][index - 1] = workspaces[code][index - 1], workspaces[code][index]
+            save_workspaces(workspaces)
+        return '', 200
+    return '', 400
 
 app = Flask(__name__)
 app.register_blueprint(appbp)
